@@ -6,6 +6,7 @@
 , gnumake
 , perl
 , glucose
+, makeWrapper
 , version ? "2.3.4"
 }:
 
@@ -19,8 +20,7 @@ stdenv.mkDerivation {
     sha256 = "sha256-Rk0A6u3dB4ayDBP9EpeaGZIvKXAEi2DMJQg22LbE4Po=";
   };
 
-  nativeBuildInputs = [ gnumake jdk8 ];
-  propagatedBuildInputs = [ perl jre8 glucose ];
+  nativeBuildInputs = [ gnumake jdk8 makeWrapper ];
 
   preBuild = ''
     substituteInPlace Makefile \
@@ -46,5 +46,10 @@ stdenv.mkDerivation {
     cp -r examples/* $out/share/examples/sugar
     mkdir -p $out/share/tools/sugar
     cp -r tools/* $out/share/tools/sugar
+
+    wrapProgram $out/bin/sugar \
+      --prefix PATH : ${glucose}/bin \
+      --prefix PATH : ${jre8}/bin \
+      --prefix PATH : ${perl}/bin
   '';
 }
